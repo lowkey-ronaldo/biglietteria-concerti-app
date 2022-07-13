@@ -1,0 +1,61 @@
+create database BiglietteriaConcertiOnLine;
+CREATE TABLE cliente (
+		ClienteID int auto_increment,
+		Ruolo varchar(20) not null,
+		Cognome varchar(255) not null,
+		Nome varchar(255) not null,
+		Codice varchar(255) not null,
+    primary key (ClienteID)
+);
+
+CREATE TABLE replica (
+	ReplicaID varchar(9),
+    DataReplica date not null,
+	primary key (ReplicaID)
+);
+
+CREATE TABLE biglietto (
+    BigliettoID int auto_increment,
+    CodiceVenditore int not null,
+    Citta varchar(25) not null,
+    Luogo varchar(50) not null,
+    Gruppo varchar(100) not null,
+	Prezzo varchar(100) not null,
+    Quantita int not null,
+	Replica date not null,
+    CodiceReplica varchar(20) not null,
+    Pagamento set("bancomant", "carta di credito", "mav", "paypal", "rate") not null,
+    primary key (BigliettoID),
+    foreign key (CodiceVenditore) references cliente(ClienteID),
+	foreign key (CodiceReplica) references replica(ReplicaID)
+);
+DROP TABLE biglietto;
+
+CREATE TABLE prenotazione (
+    ClienteID int,
+    BigliettoID int,
+    foreign key (ClienteID) references cliente(ClienteID),
+	foreign key (BigliettoID) references biglietto(BigliettoID)
+);
+
+INSERT INTO cliente (Ruolo, Cognome, Nome, Codice) VALUES ("Cliente", "Poma", "Ronaldo", "pass1"),
+("Cliente", "Rosales", "Lorenzo", "pass2"),
+("Venditore", "Farcasino", "Edin", "pass3"),
+("Venditore", "Garba", "Gabri", "pass4");
+select * from cliente;
+
+INSERT INTO replica (ReplicaID, DataReplica) VALUES ("replica01","2022-07-02"),("replica02","2022-09-01"),("replica03","2022-08-01"),
+("replica04","2022-07-20"),("replica05","2022-09-23"),("replica06","2022-08-01");
+select * from replica;
+
+INSERT INTO biglietto (CodiceVenditore, Citta, Luogo, Gruppo, Prezzo, Quantita, Replica, CodiceReplica, Pagamento) 
+				VALUES (3, "Torino", "Porta Palas", "Grupodies4", "20€", 10, "2022-07-01", "replica01", "bancomant,carta di credito,mav,paypal,rate" ),
+                (3, "Milano", "Duomo", "Ernia", "50€", 100,"2022-09-01", "replica02", "bancomant,carta di credito,mav,paypal,rate" ),
+                (3, "Roma", "Centro", "Rondo", "60€", 100, "2022-08-01", "replica03", "bancomant,carta di credito,paypal" ),
+                (4, "Pisa", "Torre", "Ed Sheeran", "90€", 1000, "2022-07-20", "replica04", "bancomant,carta di credito,mav,paypal,rate" ),
+                (4, "Trieste", "Chiesa", "Paky", "70€", 5, "2022-09-23", "replica05", "bancomant,carta di credito,paypal,rate" ),
+                (4, "Napoli", "Duomo", "Shiva", "30€", 1000, "2022-08-01", "replica06", "bancomant,carta di credito,paypal" );
+select * from biglietto;
+
+INSERT INTO prenotazione (ClienteID, BigliettoID) VALUES (1,1),(2,6),(2,2);
+select * from prenotazione;
